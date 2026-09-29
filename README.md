@@ -4,6 +4,22 @@ Uma aplicação desktop moderna e intuitiva desenvolvida em Python para automati
 
 ---
 
+## 📥 Download do Aplicativo Executável (.exe)
+
+Você pode baixar a versão mais recente e pronta para uso do **YouTube Chapter Splitter** sem precisar instalar o Python ou dependências:
+
+| Recurso | Detalhes |
+| :--- | :--- |
+| **Versão Atual** | `v1.0.0` |
+| **Plataforma** | Windows (64-bit) |
+| **Tipo de Instalação** | Executável Portable (Single File .exe) |
+| **Link Direto** | [⬇️ Baixar YouTube_Chapter_Splitter.exe (v1.0.0)](https://github.com/matsuiguenta/app-yt-dlp-chapter/releases/download/v1.0.0/YouTube_Chapter_Splitter.exe) |
+| **Página de Releases** | [📦 Ver Release v1.0.0 no GitHub](https://github.com/matsuiguenta/app-yt-dlp-chapter/releases/tag/v1.0.0) |
+
+> 💡 **Nota**: O aplicativo é **100% portátil** e já traz os binários de mídia (`yt-dlp` e `FFmpeg`) embutidos. Basta realizar o download e executar.
+
+---
+
 ## ✨ Funcionalidades
 
 - 🔗 **Análise Automática de URL**: Valida a URL e consulta os metadados do vídeo para detectar capítulos nativos automaticamente.
@@ -45,14 +61,14 @@ app-yt-dlp-chapter/
 
 ---
 
-## 🚀 Como Executar o Projeto
+## 🚀 Como Executar o Projeto (Desenvolvimento)
 
 ### Pré-requisitos
 - **Python 3.10+** instalado em seu sistema.
 
 ### 1. Clonar o repositório
 ```bash
-git clone https://github.com/seu-usuario/app-yt-dlp-chapter.git
+git clone https://github.com/matsuiguenta/app-yt-dlp-chapter.git
 cd app-yt-dlp-chapter
 ```
 
