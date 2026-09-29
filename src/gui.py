@@ -30,7 +30,7 @@ class AppInterface(ctk.CTk):
 
         # ------------------- 1. BARRA SUPERIOR ESCURA (HEADER) -------------------
         self.frame_top = ctk.CTkFrame(self, fg_color="#1a1a1a", corner_radius=0, height=80)
-        self.frame_top.grid(row=0, column=0, sticky="ew", padx=0, py=0)
+        self.frame_top.grid(row=0, column=0, sticky="ew", padx=0, pady=0)
         self.frame_top.grid_columnconfigure(1, weight=1)
 
         self.lbl_url = ctk.CTkLabel(
@@ -39,7 +39,7 @@ class AppInterface(ctk.CTk):
             font=("Segoe UI", 13, "bold"),
             text_color="#ffffff"
         )
-        self.lbl_url.grid(row=0, column=0, padx=(20, 10), py=20, sticky="w")
+        self.lbl_url.grid(row=0, column=0, padx=(20, 10), pady=20, sticky="w")
 
         self.txt_url = ctk.CTkEntry(
             self.frame_top,
@@ -47,7 +47,7 @@ class AppInterface(ctk.CTk):
             font=("Segoe UI", 12),
             height=36
         )
-        self.txt_url.grid(row=0, column=1, padx=(0, 10), py=20, sticky="ew")
+        self.txt_url.grid(row=0, column=1, padx=(0, 10), pady=20, sticky="ew")
 
         self.btn_analisar = ctk.CTkButton(
             self.frame_top,
@@ -59,11 +59,11 @@ class AppInterface(ctk.CTk):
             width=110,
             command=self.analisar_video
         )
-        self.btn_analisar.grid(row=0, column=2, padx=(0, 20), py=20, sticky="e")
+        self.btn_analisar.grid(row=0, column=2, padx=(0, 20), pady=20, sticky="e")
 
         # ------------------- 2. OPÇÕES DE CONFIGURAÇÃO DE MÍDIA -------------------
         self.frame_opcoes = ctk.CTkFrame(self, fg_color="#242424", corner_radius=8)
-        self.frame_opcoes.grid(row=1, column=0, sticky="ew", padx=20, py=(15, 10))
+        self.frame_opcoes.grid(row=1, column=0, sticky="ew", padx=20, pady=(15, 10))
         self.frame_opcoes.grid_columnconfigure(3, weight=1)
 
         self.lbl_opcoes_titulo = ctk.CTkLabel(
@@ -71,7 +71,7 @@ class AppInterface(ctk.CTk):
             text="Opções de Saída:",
             font=("Segoe UI", 12, "bold")
         )
-        self.lbl_opcoes_titulo.grid(row=0, column=0, padx=15, py=12, sticky="w")
+        self.lbl_opcoes_titulo.grid(row=0, column=0, padx=15, pady=12, sticky="w")
 
         self.chk_audio = ctk.CTkCheckBox(
             self.frame_opcoes,
@@ -79,39 +79,39 @@ class AppInterface(ctk.CTk):
             font=("Segoe UI", 12),
             command=self.alternar_modo_audio
         )
-        self.chk_audio.grid(row=0, column=1, padx=15, py=12, sticky="w")
+        self.chk_audio.grid(row=0, column=1, padx=15, pady=12, sticky="w")
 
         self.lbl_qualidade = ctk.CTkLabel(
             self.frame_opcoes,
             text="Resolução:",
             font=("Segoe UI", 12)
         )
-        self.lbl_qualidade.grid(row=0, column=2, padx=(20, 5), py=12, sticky="w")
+        self.lbl_qualidade.grid(row=0, column=2, padx=(20, 5), pady=12, sticky="w")
 
         self.opt_qualidade = ctk.CTkOptionMenu(
             self.frame_opcoes,
             values=["Melhor Disponível", "1080p", "720p", "480p"],
             width=150
         )
-        self.opt_qualidade.grid(row=0, column=3, padx=(0, 15), py=12, sticky="w")
+        self.opt_qualidade.grid(row=0, column=3, padx=(0, 15), pady=12, sticky="w")
 
         self.lbl_formato = ctk.CTkLabel(
             self.frame_opcoes,
             text="Formato:",
             font=("Segoe UI", 12)
         )
-        self.lbl_formato.grid(row=0, column=4, padx=(10, 5), py=12, sticky="w")
+        self.lbl_formato.grid(row=0, column=4, padx=(10, 5), pady=12, sticky="w")
 
         self.opt_formato = ctk.CTkOptionMenu(
             self.frame_opcoes,
             values=["MP4", "MKV"],
             width=90
         )
-        self.opt_formato.grid(row=0, column=5, padx=(0, 15), py=12, sticky="w")
+        self.opt_formato.grid(row=0, column=5, padx=(0, 15), pady=12, sticky="w")
 
         # ------------------- 3. ÁREA CENTRAL DE MINUTAGEM / CAPÍTULOS -------------------
         self.frame_central = ctk.CTkFrame(self, fg_color="transparent")
-        self.frame_central.grid(row=2, column=0, sticky="nsew", padx=20, py=5)
+        self.frame_central.grid(row=2, column=0, sticky="nsew", padx=20, pady=5)
         self.frame_central.grid_rowconfigure(1, weight=1)
         self.frame_central.grid_columnconfigure(0, weight=1)
 
@@ -138,7 +138,7 @@ class AppInterface(ctk.CTk):
 
         # ------------------- 4. SELEÇÃO DE PASTA DE DESTINO -------------------
         self.frame_destino = ctk.CTkFrame(self, fg_color="transparent")
-        self.frame_destino.grid(row=3, column=0, sticky="ew", padx=20, py=10)
+        self.frame_destino.grid(row=3, column=0, sticky="ew", padx=20, pady=10)
         self.frame_destino.grid_columnconfigure(1, weight=1)
 
         self.lbl_destino = ctk.CTkLabel(
@@ -167,7 +167,7 @@ class AppInterface(ctk.CTk):
 
         # ------------------- 5. BARRA DE PROGRESSO E STATUS -------------------
         self.frame_status = ctk.CTkFrame(self, fg_color="transparent")
-        self.frame_status.grid(row=4, column=0, sticky="ew", padx=20, py=5)
+        self.frame_status.grid(row=4, column=0, sticky="ew", padx=20, pady=5)
         self.frame_status.grid_columnconfigure(0, weight=1)
 
         self.lbl_status = ctk.CTkLabel(
@@ -179,7 +179,7 @@ class AppInterface(ctk.CTk):
         self.lbl_status.grid(row=0, column=0, sticky="w")
 
         self.barra_progresso = ctk.CTkProgressBar(self.frame_status, height=12)
-        self.barra_progresso.grid(row=1, column=0, sticky="ew", py=5)
+        self.barra_progresso.grid(row=1, column=0, sticky="ew", pady=5)
         self.barra_progresso.set(0)
 
         # ------------------- 6. BOTÃO INFERIOR DESTACADO -------------------
@@ -192,7 +192,7 @@ class AppInterface(ctk.CTk):
             height=45,
             command=self.iniciar_thread_processamento
         )
-        self.btn_extrair.grid(row=5, column=0, sticky="ew", padx=20, py=(5, 20))
+        self.btn_extrair.grid(row=5, column=0, sticky="ew", padx=20, pady=(5, 20))
 
     def alternar_modo_audio(self):
         modo_audio = bool(self.chk_audio.get())
