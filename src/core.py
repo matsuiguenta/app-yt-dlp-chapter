@@ -128,6 +128,22 @@ class VideoSplitterCore:
             'capitulos_nativos': capitulos_formatados
         }
 
+    def verificar_codec_h264(self, caminho_arquivo):
+        """Verifica via FFmpeg se o arquivo já possui streams H.264 / AVC e AAC."""
+        try:
+            creationflags = subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
+            proc = subprocess.run(
+                [self.ffmpeg_path, "-i", caminho_arquivo],
+                capture_output=True,
+                text=True,
+                creationflags=creationflags
+            )
+            stderr = proc.stderr.lower()
+            contem_h264 = ("h264" in stderr or "avc1" in stderr or "avc " in stderr)
+            return contem_h264
+        except Exception:
+            return False
+
     def processar_capitulos_manuais(
         self,
         texto_usuario,
@@ -136,6 +152,7 @@ class VideoSplitterCore:
         apenas_audio=False,
         qualidade_video="Melhor Disponível",
         formato_video="MP4",
+        codec_video="H.264 (Android)",
         progress_callback=None
     ):
         """
@@ -151,15 +168,27 @@ class VideoSplitterCore:
 
         arquivo_temporario = os.path.join(pasta_destino, "_temp_full_video.mp4")
 
-        # Define opções de download com base na escolha de qualidade/formato
-        if qualidade_video == "1080p":
-            format_opt = "bv*[height<=1080][ext=mp4]+ba[ext=m4a]/b[height<=1080][ext=mp4]/best"
-        elif qualidade_video == "720p":
-            format_opt = "bv*[height<=720][ext=mp4]+ba[ext=m4a]/b[height<=720][ext=mp4]/best"
-        elif qualidade_video == "480p":
-            format_opt = "bv*[height<=480][ext=mp4]+ba[ext=m4a]/b[height<=480][ext=mp4]/best"
+        # Define opções de download com base na escolha de qualidade/formato/codec
+        forcar_h264 = (codec_video == "H.264 (Android)")
+
+        if forcar_h264:
+            if qualidade_video == "1080p":
+                format_opt = "bv*[vcodec^=avc1][height<=1080]+ba[acodec^=mp4a]/bv*[height<=1080][ext=mp4]+ba[ext=m4a]/b[height<=1080][ext=mp4]/best"
+            elif qualidade_video == "720p":
+                format_opt = "bv*[vcodec^=avc1][height<=720]+ba[acodec^=mp4a]/bv*[height<=720][ext=mp4]+ba[ext=m4a]/b[height<=720][ext=mp4]/best"
+            elif qualidade_video == "480p":
+                format_opt = "bv*[vcodec^=avc1][height<=480]+ba[acodec^=mp4a]/bv*[height<=480][ext=mp4]+ba[ext=m4a]/b[height<=480][ext=mp4]/best"
+            else:
+                format_opt = "bv*[vcodec^=avc1]+ba[acodec^=mp4a]/bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/best"
         else:
-            format_opt = "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/best"
+            if qualidade_video == "1080p":
+                format_opt = "bv*[height<=1080][ext=mp4]+ba[ext=m4a]/b[height<=1080][ext=mp4]/best"
+            elif qualidade_video == "720p":
+                format_opt = "bv*[height<=720][ext=mp4]+ba[ext=m4a]/b[height<=720][ext=mp4]/best"
+            elif qualidade_video == "480p":
+                format_opt = "bv*[height<=480][ext=mp4]+ba[ext=m4a]/b[height<=480][ext=mp4]/best"
+            else:
+                format_opt = "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/best"
 
         cmd_download = [
             self.ytdlp_path,
@@ -181,6 +210,9 @@ class VideoSplitterCore:
             if os.path.exists(arquivo_temporario):
                 os.remove(arquivo_temporario)
             raise RuntimeError(f"Erro no download com yt-dlp: {proc_dl.stderr[:200]}")
+
+        # Verifica se o vídeo baixado já é H.264
+        ja_e_h264 = self.verificar_codec_h264(arquivo_temporario)
 
         if progress_callback:
             progress_callback(0.60, "Download concluído! Cortando capítulos...")
@@ -211,7 +243,19 @@ class VideoSplitterCore:
                     "-vn", "-acodec", "libmp3lame", "-aq", "2",
                     caminho_saida
                 ]
+            elif forcar_h264 and not ja_e_h264:
+                # Caso a fonte original seja AV1/VP9 e o usuário pediu compatibilidade Android H.264
+                cmd_corte = [
+                    self.ffmpeg_path, "-y"
+                ] + parametro_tempo + [
+                    "-i", arquivo_temporario,
+                    "-c:v", "libx264", "-preset", "fast", "-crf", "22",
+                    "-pix_fmt", "yuv420p",
+                    "-c:a", "aac", "-b:a", "192k",
+                    caminho_saida
+                ]
             else:
+                # Stream copy direto (rápido)
                 cmd_corte = [
                     self.ffmpeg_path, "-y"
                 ] + parametro_tempo + [
@@ -251,6 +295,7 @@ class VideoSplitterCore:
         apenas_audio,
         qualidade_video,
         formato_video,
+        codec_video,
         callback_progresso,
         callback_fim,
         callback_erro
@@ -268,6 +313,7 @@ class VideoSplitterCore:
                     apenas_audio=apenas_audio,
                     qualidade_video=qualidade_video,
                     formato_video=formato_video,
+                    codec_video=codec_video,
                     progress_callback=on_progress
                 )
                 callback_fim()

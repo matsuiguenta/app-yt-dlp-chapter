@@ -109,6 +109,20 @@ class AppInterface(ctk.CTk):
         )
         self.opt_formato.grid(row=0, column=5, padx=(0, 15), pady=12, sticky="w")
 
+        self.lbl_codec = ctk.CTkLabel(
+            self.frame_opcoes,
+            text="Codec Video:",
+            font=("Segoe UI", 12)
+        )
+        self.lbl_codec.grid(row=0, column=6, padx=(10, 5), pady=12, sticky="w")
+
+        self.opt_codec = ctk.CTkOptionMenu(
+            self.frame_opcoes,
+            values=["H.264 (Android)", "Original (Sem re-encode)"],
+            width=170
+        )
+        self.opt_codec.grid(row=0, column=7, padx=(0, 15), pady=12, sticky="w")
+
         # ------------------- 3. ÁREA CENTRAL DE MINUTAGEM / CAPÍTULOS -------------------
         self.frame_central = ctk.CTkFrame(self, fg_color="transparent")
         self.frame_central.grid(row=2, column=0, sticky="nsew", padx=20, pady=5)
@@ -199,6 +213,7 @@ class AppInterface(ctk.CTk):
         state = "disabled" if modo_audio else "normal"
         self.opt_qualidade.configure(state=state)
         self.opt_formato.configure(state=state)
+        self.opt_codec.configure(state=state)
 
     def selecionar_pasta(self):
         pasta = filedialog.askdirectory(title="Selecione a pasta para salvar os capítulos")
@@ -253,6 +268,7 @@ class AppInterface(ctk.CTk):
         apenas_audio = bool(self.chk_audio.get())
         qualidade = self.opt_qualidade.get()
         formato = self.opt_formato.get()
+        codec = self.opt_codec.get()
 
         self.btn_extrair.configure(state="disabled")
         self.btn_analisar.configure(state="disabled")
@@ -275,6 +291,7 @@ class AppInterface(ctk.CTk):
             apenas_audio=apenas_audio,
             qualidade_video=qualidade,
             formato_video=formato,
+            codec_video=codec,
             callback_progresso=cb_progresso,
             callback_fim=cb_fim,
             callback_erro=cb_erro

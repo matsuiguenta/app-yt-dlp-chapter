@@ -10,11 +10,11 @@ Você pode baixar a versão mais recente e pronta para uso do **YouTube Chapter 
 
 | Recurso | Detalhes |
 | :--- | :--- |
-| **Versão Atual** | `v1.0.0` |
+| **Versão Atual** | `v1.1.0` |
 | **Plataforma** | Windows (64-bit) |
 | **Tipo de Instalação** | Executável Portable (Single File .exe) |
-| **Link Direto** | [⬇️ Baixar YouTube_Chapter_Splitter.exe (v1.0.0)](https://github.com/matsuiguenta/app-yt-dlp-chapter/releases/download/v1.0.0/YouTube_Chapter_Splitter.exe) |
-| **Página de Releases** | [📦 Ver Release v1.0.0 no GitHub](https://github.com/matsuiguenta/app-yt-dlp-chapter/releases/tag/v1.0.0) |
+| **Link Direto** | [⬇️ Baixar YouTube_Chapter_Splitter.exe (v1.1.0)](https://github.com/matsuiguenta/app-yt-dlp-chapter/releases/download/v1.1.0/YouTube_Chapter_Splitter.exe) |
+| **Página de Releases** | [📦 Ver Release v1.1.0 no GitHub](https://github.com/matsuiguenta/app-yt-dlp-chapter/releases/tag/v1.1.0) |
 
 > 💡 **Nota**: O aplicativo é **100% portátil** e já traz os binários de mídia (`yt-dlp` e `FFmpeg`) embutidos. Basta realizar o download e executar.
 
@@ -26,7 +26,8 @@ Você pode baixar a versão mais recente e pronta para uso do **YouTube Chapter 
 - ⏱️ **Minutagem Customizada**: Permite colar ou editar a minutagem dos capítulos no formato `MM:SS - Nome` ou `HH:MM:SS - Nome`.
 - 🎧 **Modo Apenas Áudio (MP3)**: Extrai diretamente as faixas de áudio dos capítulos em formato MP3 de alta qualidade.
 - 🎬 **Modo Vídeo (MP4 / MKV)**: Escolha entre resoluções (Melhor Disponível, 1080p, 720p, 480p) e formatos de saída.
-- ⚡ **Fatiamento Ultra-rápido**: Utiliza o motor do FFmpeg com cópia de stream (`-c copy`), fatiando os capítulos sem perda de qualidade e sem consumo excessivo de CPU.
+- 📱 **Compatibilidade Ampliada (H.264)**: Seleção e conversão automática no codec H.264/AVC + AAC (`yuv420p`), garantindo reprodução nativa no Android, iOS, Smart TVs e WhatsApp.
+- ⚡ **Fatiamento Ultra-rápido**: Utiliza o motor do FFmpeg com cópia de stream (`-c copy`) quando o vídeo já é H.264 ou quando mantido no formato original.
 - 🎨 **Interface Moderna**: Desenvolvida com CustomTkinter em modo escuro (Dark Theme), responsiva e amigável.
 - 📦 **Executável Único Portable**: Compilado via PyInstaller em um único arquivo `.exe` sem necessidade de instalações adicionais no Windows.
 
