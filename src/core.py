@@ -2,6 +2,7 @@ import os
 import re
 import sys
 import json
+import shutil
 import subprocess
 import threading
 
@@ -36,6 +37,19 @@ class VideoSplitterCore:
     def __init__(self, bin_folder="bin"):
         self.ytdlp_path = resolve_bin_path("yt-dlp.exe")
         self.ffmpeg_path = resolve_bin_path("ffmpeg.exe")
+
+    def get_common_ytdlp_args(self):
+        """
+        Retorna argumentos essenciais para o yt-dlp:
+        - player_client web_embedded,android: contorna restrições 429/anti-bot e desbloqueia 720p/1080p/4K
+        - js-runtimes: ativa node/deno para resolver desafios de assinatura n-sig do YouTube
+        """
+        args = ["--extractor-args", "youtube:player_client=web_embedded,android"]
+        if shutil.which("node"):
+            args.extend(["--js-runtimes", "node"])
+        elif shutil.which("deno"):
+            args.extend(["--js-runtimes", "deno"])
+        return args
 
     def converter_para_segundos(self, tempo_str):
         """Converte formatos MM:SS ou HH:MM:SS para o total em segundos."""
@@ -89,7 +103,11 @@ class VideoSplitterCore:
         if not url_video or not url_video.strip():
             raise ValueError("Por favor, informe uma URL válida do YouTube.")
 
-        cmd = [self.ytdlp_path, "--dump-json", "--no-playlist", url_video.strip()]
+        cmd = [
+            self.ytdlp_path,
+            "--dump-json",
+            "--no-playlist",
+        ] + self.get_common_ytdlp_args() + [url_video.strip()]
         
         try:
             # Em Windows, ocultar janela do console ao rodar o comando subprocess
@@ -103,7 +121,21 @@ class VideoSplitterCore:
                 creationflags=creationflags,
                 check=True
             )
-            data = json.loads(resultado.stdout)
+            stdout_str = resultado.stdout.strip()
+            try:
+                data = json.loads(stdout_str)
+            except json.JSONDecodeError:
+                for line in stdout_str.splitlines():
+                    line = line.strip()
+                    if line.startswith("{") and line.endswith("}"):
+                        data = json.loads(line)
+                        break
+                else:
+                    raise ValueError("Resposta JSON inválida do yt-dlp.")
+        except subprocess.CalledProcessError as cpe:
+            linhas_erro = [l for l in (cpe.stderr or "").splitlines() if "ERROR:" in l or "HTTP Error" in l]
+            msg_erro = " | ".join(linhas_erro) if linhas_erro else (cpe.stderr or str(cpe))[-300:]
+            raise ValueError(f"Falha ao analisar a URL do vídeo: {msg_erro}")
         except Exception as e:
             raise ValueError(f"Falha ao analisar a URL do vídeo: {str(e)}")
 
@@ -173,25 +205,27 @@ class VideoSplitterCore:
 
         if forcar_h264:
             if qualidade_video == "1080p":
-                format_opt = "bv*[vcodec^=avc1][height<=1080]+ba[acodec^=mp4a]/bv*[height<=1080][ext=mp4]+ba[ext=m4a]/b[height<=1080][ext=mp4]/best"
+                format_opt = "bv*[vcodec^=avc1][height<=1080]+ba[acodec^=mp4a]/bv*[vcodec^=avc1][height<=1080]+ba/bv*[height<=1080]+ba/b[height<=1080]/best"
             elif qualidade_video == "720p":
-                format_opt = "bv*[vcodec^=avc1][height<=720]+ba[acodec^=mp4a]/bv*[height<=720][ext=mp4]+ba[ext=m4a]/b[height<=720][ext=mp4]/best"
+                format_opt = "bv*[vcodec^=avc1][height<=720]+ba[acodec^=mp4a]/bv*[vcodec^=avc1][height<=720]+ba/bv*[height<=720]+ba/b[height<=720]/best"
             elif qualidade_video == "480p":
-                format_opt = "bv*[vcodec^=avc1][height<=480]+ba[acodec^=mp4a]/bv*[height<=480][ext=mp4]+ba[ext=m4a]/b[height<=480][ext=mp4]/best"
+                format_opt = "bv*[vcodec^=avc1][height<=480]+ba[acodec^=mp4a]/bv*[vcodec^=avc1][height<=480]+ba/bv*[height<=480]+ba/b[height<=480]/best"
             else:
-                format_opt = "bv*[vcodec^=avc1]+ba[acodec^=mp4a]/bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/best"
+                format_opt = "bv*[vcodec^=avc1]+ba[acodec^=mp4a]/bv*[vcodec^=avc1]+ba/bv*+ba/b/best"
         else:
             if qualidade_video == "1080p":
-                format_opt = "bv*[height<=1080][ext=mp4]+ba[ext=m4a]/b[height<=1080][ext=mp4]/best"
+                format_opt = "bv*[height<=1080]+ba/b[height<=1080]/best"
             elif qualidade_video == "720p":
-                format_opt = "bv*[height<=720][ext=mp4]+ba[ext=m4a]/b[height<=720][ext=mp4]/best"
+                format_opt = "bv*[height<=720]+ba/b[height<=720]/best"
             elif qualidade_video == "480p":
-                format_opt = "bv*[height<=480][ext=mp4]+ba[ext=m4a]/b[height<=480][ext=mp4]/best"
+                format_opt = "bv*[height<=480]+ba/b[height<=480]/best"
             else:
-                format_opt = "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/best"
+                format_opt = "bv*+ba/b/best"
 
         cmd_download = [
             self.ytdlp_path,
+        ] + self.get_common_ytdlp_args() + [
+            "--ffmpeg-location", self.ffmpeg_path,
             "-f", format_opt,
             "-o", arquivo_temporario,
             "--no-playlist",
@@ -209,7 +243,20 @@ class VideoSplitterCore:
         if proc_dl.returncode != 0:
             if os.path.exists(arquivo_temporario):
                 os.remove(arquivo_temporario)
-            raise RuntimeError(f"Erro no download com yt-dlp: {proc_dl.stderr[:200]}")
+            linhas_erro = [l for l in (proc_dl.stderr or "").splitlines() if "ERROR:" in l or "HTTP Error" in l]
+            msg_resumo = " | ".join(linhas_erro) if linhas_erro else (proc_dl.stderr or "")[-300:]
+            raise RuntimeError(f"Erro no download com yt-dlp: {msg_resumo}")
+
+        # Localiza o arquivo caso yt-dlp tenha salvo com extensão de container diferente
+        if not os.path.exists(arquivo_temporario):
+            base_temp = os.path.splitext(arquivo_temporario)[0]
+            possiveis = [
+                os.path.join(pasta_destino, f)
+                for f in os.listdir(pasta_destino)
+                if f.startswith(os.path.basename(base_temp)) and not f.endswith(".part")
+            ]
+            if possiveis:
+                arquivo_temporario = possiveis[0]
 
         # Verifica se o vídeo baixado já é H.264
         ja_e_h264 = self.verificar_codec_h264(arquivo_temporario)
