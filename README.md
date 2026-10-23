@@ -10,11 +10,11 @@ Você pode baixar a versão mais recente e pronta para uso do **YouTube Chapter 
 
 | Recurso | Detalhes |
 | :--- | :--- |
-| **Versão Atual** | `v1.1.0` |
+| **Versão Atual** | `v1.1.1` |
 | **Plataforma** | Windows (64-bit) |
 | **Tipo de Instalação** | Executável Portable (Single File .exe) |
-| **Link Direto** | [⬇️ Baixar YouTube_Chapter_Splitter.exe (v1.1.0)](https://github.com/matsuiguenta/app-yt-dlp-chapter/releases/download/v1.1.0/YouTube_Chapter_Splitter.exe) |
-| **Página de Releases** | [📦 Ver Release v1.1.0 no GitHub](https://github.com/matsuiguenta/app-yt-dlp-chapter/releases/tag/v1.1.0) |
+| **Link Direto** | [⬇️ Baixar YouTube_Chapter_Splitter.exe (v1.1.1)](https://github.com/matsuiguenta/app-yt-dlp-chapter/releases/download/v1.1.1/YouTube_Chapter_Splitter.exe) |
+| **Página de Releases** | [📦 Ver Release v1.1.1 no GitHub](https://github.com/matsuiguenta/app-yt-dlp-chapter/releases/tag/v1.1.1) |
 
 > 💡 **Nota**: O aplicativo é **100% portátil** e já traz os binários de mídia (`yt-dlp` e `FFmpeg`) embutidos. Basta realizar o download e executar.
 
